@@ -1,5 +1,5 @@
 export interface HeaderColume {
-	type: string | number | boolean;
+	// type: string | number | boolean;
 	primary?: boolean;
 }
 
