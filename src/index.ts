@@ -1,7 +1,7 @@
 import path from "path";
 import fs from "fs";
 
-import { NoDBContent, HeaderOption, FileHeader } from "interface";
+import { NoDBContent, HeaderOption, FileHeader } from "./interface";
 
 const JSON_FILE_PATH = path.resolve(__dirname, "db");
 

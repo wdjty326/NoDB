@@ -1,4 +1,4 @@
-import { HeaderOption } from "interface";
+import { HeaderOption } from "./interface";
 declare class NoDB {
     private static instance;
     static getInstance(): NoDB;
