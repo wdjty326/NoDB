@@ -47,109 +47,147 @@ var NoDB = /** @class */ (function () {
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        // 파일 형식은 json 형식으로 가져갑니다.
-        fileName = !/\.(json)$/.test(fileName) ? fileName + ".json" : fileName;
-        var filePath = path_1.default.resolve(JSON_FILE_PATH, fileName);
-        if (fs_1.default.existsSync(filePath))
-            throw Error("File already exists::" + fileName);
-        var header = {};
-        args.forEach(function (v) {
-            if (typeof v === "string")
-                header[v] = {};
-            else
-                header[v.name] = { primary: v.primary, };
+        return new Promise(function (resolve, reject) {
+            try {
+                // 파일 형식은 json 형식으로 가져갑니다.
+                fileName = !/\.(json)$/.test(fileName) ? fileName + ".json" : fileName;
+                var filePath = path_1.default.resolve(JSON_FILE_PATH, fileName);
+                if (fs_1.default.existsSync(filePath))
+                    throw Error("File already exists::" + fileName);
+                var header_1 = {};
+                args.forEach(function (v) {
+                    if (typeof v === "string")
+                        header_1[v] = {};
+                    else
+                        header_1[v.name] = { primary: v.primary, };
+                });
+                fs_1.default.writeFileSync(filePath, JSON.stringify({ header: header_1, data: [] }), { encoding: "utf-8" });
+                resolve();
+            }
+            catch (e) {
+                reject(e);
+            }
         });
-        fs_1.default.writeFileSync(filePath, JSON.stringify({ header: header, data: [] }), { encoding: "utf-8" });
     };
     // 데이터 파일 헤더를 변경합니다.
     NoDB.prototype.updateFile = function (fileName) {
+        var _this = this;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        this.readFile(fileName)
-            .then(function (_a) {
-            var filePath = _a.filePath, data = _a.data, primary = _a.primary;
-            var header = {};
-            args.forEach(function (v) {
-                if (typeof v === "string")
-                    header[v] = {};
-                else
-                    header[v.name] = { primary: v.primary, };
+        return new Promise(function (resolve, reject) {
+            _this.readFile(fileName)
+                .then(function (_a) {
+                var filePath = _a.filePath, data = _a.data, primary = _a.primary;
+                var header = {};
+                args.forEach(function (v) {
+                    if (typeof v === "string")
+                        header[v] = {};
+                    else
+                        header[v.name] = { primary: v.primary, };
+                });
+                fs_1.default.writeFileSync(filePath, JSON.stringify(__assign(__assign({}, data), {
+                    header: __assign(__assign({}, data.header), header),
+                })), { encoding: "utf-8" });
+                resolve();
+            })
+                .catch(function (e) {
+                reject(e);
             });
-            fs_1.default.writeFileSync(filePath, JSON.stringify(__assign(__assign({}, data), {
-                header: __assign(__assign({}, data.header), header),
-            })), { encoding: "utf-8" });
         });
     };
     // 데이터 파일을 제거합니다.
     NoDB.prototype.deleteFile = function (fileName) {
-        // 파일 형식은 json 형식으로 가져갑니다.
-        fileName = !/\.(json)$/.test(fileName) ? fileName + ".json" : fileName;
-        var filePath = path_1.default.resolve(JSON_FILE_PATH, fileName);
-        if (fs_1.default.existsSync(filePath))
-            fs_1.default.rmSync(filePath);
+        return new Promise(function (resolve, reject) {
+            try {
+                // 파일 형식은 json 형식으로 가져갑니다.
+                fileName = !/\.(json)$/.test(fileName) ? fileName + ".json" : fileName;
+                var filePath = path_1.default.resolve(JSON_FILE_PATH, fileName);
+                if (fs_1.default.existsSync(filePath))
+                    fs_1.default.rmSync(filePath);
+                resolve();
+            }
+            catch (e) {
+                reject(e);
+            }
+        });
     };
     // 신규 데이터를 추가합니다.
     NoDB.prototype.insertData = function (fileName) {
+        var _this = this;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        this.readFile(fileName)
-            .then(function (_a) {
-            var _b;
-            var filePath = _a.filePath, data = _a.data, primary = _a.primary;
-            if (data.data.some(function (v) {
-                var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
-                return idx > -1;
-            }))
-                throw Error("Already Primary key");
-            (_b = data.data).push.apply(_b, args);
-            fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
-        })
-            .catch(function (e) {
-            console.error(e);
+        return new Promise(function (resolve, reject) {
+            _this.readFile(fileName)
+                .then(function (_a) {
+                var _b;
+                var filePath = _a.filePath, data = _a.data, primary = _a.primary;
+                if (data.data.some(function (v) {
+                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    return idx > -1;
+                }))
+                    throw Error("Already Primary key");
+                (_b = data.data).push.apply(_b, args);
+                fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
+                resolve();
+            })
+                .catch(function (e) {
+                console.error(e);
+                reject(e);
+            });
         });
     };
     // 데이터를 업데이트합니다. primary 가 없으면 업데이트를 하지 않습니다.
     NoDB.prototype.updateData = function (fileName) {
+        var _this = this;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        this.readFile(fileName)
-            .then(function (_a) {
-            var filePath = _a.filePath, data = _a.data, primary = _a.primary;
-            data.data = data.data.map(function (v) {
-                var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
-                if (idx > -1)
-                    Object.keys(args[idx]).forEach(function (k) { return (v[k] = args[idx][k]); });
-                return v;
+        return new Promise(function (resolve, reject) {
+            _this.readFile(fileName)
+                .then(function (_a) {
+                var filePath = _a.filePath, data = _a.data, primary = _a.primary;
+                data.data = data.data.map(function (v) {
+                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    if (idx > -1)
+                        Object.keys(args[idx]).forEach(function (k) { return (v[k] = args[idx][k]); });
+                    return v;
+                });
+                fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
+                resolve();
+            })
+                .catch(function (e) {
+                console.error(e);
+                reject(e);
             });
-            fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
-        })
-            .catch(function (e) {
-            console.error(e);
         });
     };
     // 데이터를 제거합니다. primary 가 없으면 제거하지 않습니다.
     NoDB.prototype.deleteData = function (fileName) {
+        var _this = this;
         var args = [];
         for (var _i = 1; _i < arguments.length; _i++) {
             args[_i - 1] = arguments[_i];
         }
-        this.readFile(fileName)
-            .then(function (_a) {
-            var filePath = _a.filePath, data = _a.data, primary = _a.primary;
-            data.data = data.data.filter(function (v) {
-                var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
-                return idx === -1;
+        return new Promise(function (resolve, reject) {
+            _this.readFile(fileName)
+                .then(function (_a) {
+                var filePath = _a.filePath, data = _a.data, primary = _a.primary;
+                data.data = data.data.filter(function (v) {
+                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    return idx === -1;
+                });
+                fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
+                resolve();
+            })
+                .catch(function (e) {
+                console.error(e);
+                reject(e);
             });
-            fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });
-        })
-            .catch(function (e) {
-            console.error(e);
         });
     };
     NoDB.prototype.selectOne = function (fileName, fn) {
