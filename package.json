@@ -1,6 +1,7 @@
 {
   "name": "nodb",
-  "version": "0.0.1",
+  "version": "0.0.2",
+  "type": "module",
   "description": "",
   "main": "./src/index.ts",
   "scripts": {},
