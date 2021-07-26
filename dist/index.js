@@ -190,7 +190,13 @@ var NoDB = /** @class */ (function () {
                 .then(function (_a) {
                 var filePath = _a.filePath, data = _a.data, primary = _a.primary;
                 data.data = data.data.filter(function (v) {
-                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    var idx = args.findIndex(function (x) {
+                        var checked = false;
+                        primary.forEach(function (y) {
+                            checked = x[y] === v[y];
+                        });
+                        return checked;
+                    });
                     return idx === -1;
                 });
                 fs_1.default.writeFileSync(filePath, JSON.stringify(data), { encoding: "utf-8" });

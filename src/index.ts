@@ -166,7 +166,13 @@ class NoDB {
 			this.readFile<T>(fileName)
 				.then(({ filePath, data, primary }) => {
 					data.data = data.data.filter((v) => {
-						const idx = args.findIndex((x) => primary.some((y) => (x[y] === v[y])));
+						const idx = args.findIndex((x) => {
+							let checked = false;
+							primary.forEach((y) => {
+								checked = (x as any)[y] === (v as any)[y];
+							});
+							return checked;
+						});
 						return idx === -1;
 					});
 
