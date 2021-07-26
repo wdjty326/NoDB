@@ -126,7 +126,13 @@ var NoDB = /** @class */ (function () {
                 var _b;
                 var filePath = _a.filePath, data = _a.data, primary = _a.primary;
                 if (data.data.some(function (v) {
-                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    var idx = args.findIndex(function (x) {
+                        var checked = false;
+                        primary.forEach(function (y) {
+                            checked = x[y] === v[y];
+                        });
+                        return checked;
+                    });
                     return idx > -1;
                 }))
                     throw Error("Already Primary key");
@@ -152,7 +158,13 @@ var NoDB = /** @class */ (function () {
                 .then(function (_a) {
                 var filePath = _a.filePath, data = _a.data, primary = _a.primary;
                 data.data = data.data.map(function (v) {
-                    var idx = args.findIndex(function (x) { return primary.some(function (y) { return (x[y] === v[y]); }); });
+                    var idx = args.findIndex(function (x) {
+                        var checked = false;
+                        primary.forEach(function (y) {
+                            checked = x[y] === v[y];
+                        });
+                        return checked;
+                    });
                     if (idx > -1)
                         Object.keys(args[idx]).forEach(function (k) { return (v[k] = args[idx][k]); });
                     return v;

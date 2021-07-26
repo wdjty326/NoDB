@@ -111,7 +111,13 @@ class NoDB {
 			this.readFile<T>(fileName)
 				.then(({ filePath, data, primary }) => {
 					if (data.data.some((v) => {
-						const idx = args.findIndex((x) => primary.some((y) => ((x as any)[y] === (v as any)[y])));
+						const idx = args.findIndex((x) => {
+							let checked = false;
+							primary.forEach((y) => {
+								checked = (x as any)[y] === (v as any)[y];
+							});
+							return checked;
+						});
 						return idx > -1;
 					})) throw Error("Already Primary key");
 
@@ -132,7 +138,13 @@ class NoDB {
 			this.readFile<T>(fileName)
 				.then(({ filePath, data, primary }) => {
 					data.data = data.data.map((v) => {
-						const idx = args.findIndex((x) => primary.some((y) => (x[y] === v[y])));
+						const idx = args.findIndex((x) => {
+							let checked = false;
+							primary.forEach((y) => {
+								checked = (x as any)[y] === (v as any)[y];
+							});
+							return checked;
+						});
 						if (idx > -1)
 							Object.keys(args[idx]).forEach((k) => ((v as any)[k] = args[idx][k]));
 						return v;
